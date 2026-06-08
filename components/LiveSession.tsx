@@ -800,7 +800,17 @@ const LiveSession: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-6">
-                     <button 
+                     <button
+                       onClick={() => {
+                         if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
+                       }}
+                       className="p-4 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-90 text-white transition-all shadow-lg border border-white/10 group"
+                       title="Restart Script"
+                     >
+                       <RefreshCw className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
+                     </button>
+
+                     <button
                        onClick={stopRecording}
                        className="p-4 rounded-full bg-slate-800 hover:bg-slate-700 text-white transition-all shadow-lg border border-white/10 group"
                        title="Stop & Review"
