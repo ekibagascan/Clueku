@@ -1,0 +1,9 @@
+{
+  "name": "Clueku",
+  "description": "A real-time multimodal AI assistant powered by Gemini Live API. Interact with voice and video in a seamless conversational interface.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": []
+}
