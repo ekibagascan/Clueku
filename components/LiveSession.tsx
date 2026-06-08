@@ -28,6 +28,7 @@ const LiveSession: React.FC = () => {
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(1); // 0 to 5
   const [fontSize, setFontSize] = useState(typeof window !== 'undefined' && window.innerWidth < 768 ? 28 : 42);
+  const [textPosition, setTextPosition] = useState(40); // vh from top
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -745,7 +746,7 @@ const LiveSession: React.FC = () => {
             {mode === AppMode.TELEPROMPTER && (
               <>
                 {/* SCRIPT OVERLAY - Relaxed mask to reveal more text */}
-                <div className="absolute inset-x-0 top-[40vh] h-[45vh] flex justify-center z-30 pointer-events-none">
+                <div className="absolute inset-x-0 flex justify-center z-30 pointer-events-none" style={{ top: `${textPosition}vh`, height: `${95 - textPosition}vh` }}>
                    <div
                       ref={scrollContainerRef}
                       className="w-full max-w-5xl overflow-hidden text-center relative pointer-events-auto"
@@ -783,6 +784,16 @@ const LiveSession: React.FC = () => {
                            type="range" min="20" max="72" step="2"
                            value={fontSize}
                            onChange={(e) => setFontSize(parseInt(e.target.value))}
+                           className="w-20 sm:w-24 accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
+                         />
+                       </div>
+                       <div className="w-px h-4 bg-white/20 hidden sm:block" />
+                       <div className="flex items-center gap-2">
+                         <span className="text-[10px] text-slate-400 font-mono uppercase">Height</span>
+                         <input
+                           type="range" min="5" max="75" step="5"
+                           value={textPosition}
+                           onChange={(e) => setTextPosition(parseInt(e.target.value))}
                            className="w-20 sm:w-24 accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
                          />
                        </div>
