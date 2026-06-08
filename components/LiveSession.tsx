@@ -751,8 +751,8 @@ const LiveSession: React.FC = () => {
                       ref={scrollContainerRef}
                       className="w-full max-w-5xl overflow-hidden text-center relative pointer-events-auto"
                       style={{
-                        maskImage: 'linear-gradient(to bottom, black 0%, black 50%, transparent 85%)',
-                        WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 50%, transparent 85%)'
+                        maskImage: 'linear-gradient(to bottom, black 0%, black 80%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 80%, transparent 100%)'
                       }}
                    >
                      <p 
@@ -781,7 +781,7 @@ const LiveSession: React.FC = () => {
                        <div className="flex items-center gap-2">
                          <span className="text-[10px] text-slate-400 font-mono uppercase">Size</span>
                          <input
-                           type="range" min="20" max="72" step="2"
+                           type="range" min="12" max="72" step="2"
                            value={fontSize}
                            onChange={(e) => setFontSize(parseInt(e.target.value))}
                            className="w-20 sm:w-24 accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
