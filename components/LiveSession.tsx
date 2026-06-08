@@ -752,8 +752,8 @@ const LiveSession: React.FC = () => {
                       className="w-full max-w-5xl overflow-hidden text-center relative pointer-events-auto"
                       style={{
                         paddingTop: `${textPosition}vh`,
-                        maskImage: `linear-gradient(to bottom, transparent 0%, transparent ${textPosition - 5}%, black ${textPosition + 10}%, black 80%, transparent 100%)`,
-                        WebkitMaskImage: `linear-gradient(to bottom, transparent 0%, transparent ${textPosition - 5}%, black ${textPosition + 10}%, black 80%, transparent 100%)`
+                        maskImage: 'linear-gradient(to bottom, black 0%, black 80%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 80%, transparent 100%)'
                       }}
                    >
                      <p 
