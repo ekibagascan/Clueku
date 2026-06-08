@@ -777,7 +777,7 @@ const LiveSession: React.FC = () => {
                        <div className="flex items-center gap-2">
                          <span className="text-[10px] text-slate-400 font-mono uppercase">Speed</span>
                          <input
-                           type="range" min="0.5" max="5" step="0.5"
+                           type="range" min="0.1" max="5" step="0.1"
                            value={scrollSpeed}
                            onChange={(e) => setScrollSpeed(parseFloat(e.target.value))}
                            className="w-20 sm:w-24 accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
