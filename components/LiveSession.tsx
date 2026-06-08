@@ -828,6 +828,17 @@ const LiveSession: React.FC = () => {
                         <span className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform duration-300 ${voiceScrollEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
                       </button>
                     </div>
+                    {/* Orientation toggle */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 font-mono uppercase">View</span>
+                      <button
+                        onClick={() => setIsLandscape(l => !l)}
+                        className="flex items-center gap-1 bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 px-2 py-1 rounded-lg text-[10px] font-bold text-white transition-all uppercase"
+                      >
+                        {isLandscape ? <Monitor className="w-3 h-3" /> : <Smartphone className="w-3 h-3" />}
+                        {isLandscape ? 'Land' : 'Port'}
+                      </button>
+                    </div>
                   </div>
 
                   {/* Record controls */}
