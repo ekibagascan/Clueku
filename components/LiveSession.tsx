@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Loader2, AlertCircle, Play, Briefcase, User, Layers, AlertTriangle, Wand2, ScrollText, Eye, Square, Pause, Circle, Download, Trash2, RefreshCw, X, ScanFace } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Loader2, AlertCircle, Play, Briefcase, User, Layers, AlertTriangle, Wand2, ScrollText, Eye, Square, Pause, Circle, Download, Trash2, RefreshCw, X, ScanFace, Smartphone, Monitor } from 'lucide-react';
 import { ConnectionState, AppMode } from '../types';
 import { createPcmBlob, decode, decodeAudioData, blobToBase64 } from '../utils/audio';
 import AudioVisualizer from './AudioVisualizer';
@@ -10,19 +10,8 @@ const SCRIPT_MODEL_NAME = 'gemini-2.5-flash';
 const FRAME_RATE = 5; // FPS for video streaming
 const JPEG_QUALITY = 0.8;
 
-const useIsLandscape = () => {
-  const [isLandscape, setIsLandscape] = useState(() => window.innerWidth > window.innerHeight);
-  useEffect(() => {
-    const update = () => setIsLandscape(window.innerWidth > window.innerHeight);
-    window.addEventListener('resize', update);
-    window.addEventListener('orientationchange', update);
-    return () => { window.removeEventListener('resize', update); window.removeEventListener('orientationchange', update); };
-  }, []);
-  return isLandscape;
-};
-
 const LiveSession: React.FC = () => {
-  const isLandscape = useIsLandscape();
+  const [isLandscape, setIsLandscape] = useState(false);
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
   const [mode, setMode] = useState<AppMode>(AppMode.CONVERSATION);
   const [error, setError] = useState<string | null>(null);
@@ -707,6 +696,14 @@ const LiveSession: React.FC = () => {
           </div>
           <span className="font-bold text-xl tracking-tight">Clueku</span>
         </div>
+        <button
+          onClick={() => setIsLandscape(l => !l)}
+          className="pointer-events-auto flex items-center gap-1.5 bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 px-3 py-1.5 rounded-full text-xs font-medium text-white transition-all"
+          title="Toggle layout orientation"
+        >
+          {isLandscape ? <Monitor className="w-3.5 h-3.5" /> : <Smartphone className="w-3.5 h-3.5" />}
+          {isLandscape ? 'Landscape' : 'Portrait'}
+        </button>
         
         <div className="flex items-center gap-4 pointer-events-auto">
           {warning && (
