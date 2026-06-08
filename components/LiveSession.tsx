@@ -33,6 +33,8 @@ const LiveSession: React.FC = () => {
   const [voiceScrollEnabled, setVoiceScrollEnabled] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const timerRef = useRef<number | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Recording State
@@ -82,6 +84,8 @@ const LiveSession: React.FC = () => {
   const cleanup = useCallback((preserveReview: boolean = false) => {
     if (videoIntervalRef.current) clearInterval(videoIntervalRef.current);
     if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    setRecordingSeconds(0);
     
     if (processorRef.current) {
       try { processorRef.current.disconnect(); } catch (e) { /* ignore */ }
@@ -137,6 +141,14 @@ const LiveSession: React.FC = () => {
     }
   }, []);
 
+  const formatDuration = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  };
+
   const startRecording = () => {
     if (!micStreamRef.current) {
       setWarning("No camera/microphone stream available.");
@@ -188,6 +200,8 @@ const LiveSession: React.FC = () => {
       
       recorder.start(1000); // 1s chunks
       mediaRecorderRef.current = recorder;
+      setRecordingSeconds(0);
+      timerRef.current = window.setInterval(() => setRecordingSeconds(s => s + 1), 1000);
       setIsRecording(true);
       setIsPaused(false);
     } catch (e) {
@@ -212,6 +226,8 @@ const LiveSession: React.FC = () => {
          };
          recorder.start(1000);
          mediaRecorderRef.current = recorder;
+         setRecordingSeconds(0);
+         timerRef.current = window.setInterval(() => setRecordingSeconds(s => s + 1), 1000);
          setIsRecording(true);
          setIsPaused(false);
       } catch (retryError) {
@@ -221,6 +237,7 @@ const LiveSession: React.FC = () => {
   };
 
   const stopRecording = () => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
     } else {
@@ -238,12 +255,13 @@ const LiveSession: React.FC = () => {
 
   const togglePauseRecording = () => {
     if (!mediaRecorderRef.current) return;
-    
     if (isPaused) {
       mediaRecorderRef.current.resume();
+      timerRef.current = window.setInterval(() => setRecordingSeconds(s => s + 1), 1000);
       setIsPaused(false);
     } else {
       mediaRecorderRef.current.pause();
+      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
       setIsPaused(true);
     }
   };
@@ -844,9 +862,9 @@ const LiveSession: React.FC = () => {
                   {/* Record controls */}
                   <div className={`relative flex items-center ${isLandscape ? 'flex-col gap-3' : 'gap-6'}`}>
                      {isRecording && (
-                        <div className={`bg-red-500/20 border border-red-500/50 text-red-200 px-2 py-1 rounded-full text-[10px] font-bold tracking-wider animate-pulse flex items-center gap-1.5 ${isLandscape ? '' : 'absolute -top-12'}`}>
-                           <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-                           {isPaused ? "PAUSED" : "REC"}
+                        <div className={`bg-red-500/20 border border-red-500/50 text-red-200 px-3 py-1 rounded-full text-xs font-bold tracking-wider flex items-center gap-1.5 ${isPaused ? 'opacity-60' : 'animate-pulse'} ${isLandscape ? '' : 'absolute -top-12'}`}>
+                           <div className={`w-1.5 h-1.5 rounded-full ${isPaused ? 'bg-amber-400' : 'bg-red-500'}`} />
+                           {isPaused ? 'PAUSED' : 'REC'} · {formatDuration(recordingSeconds)}
                         </div>
                      )}
                      <button
