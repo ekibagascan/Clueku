@@ -745,20 +745,13 @@ const LiveSession: React.FC = () => {
             {mode === AppMode.TELEPROMPTER && (
               <>
                 {/* SCRIPT OVERLAY - Relaxed mask to reveal more text */}
-                <div className="absolute inset-x-0 top-0 h-[80vh] flex justify-center z-30 pointer-events-none">
-                   {/* Gentle Mask - Fade out starts at 40% down, fully transparent by 70% */}
-                   <div 
-                     className="absolute inset-0 w-full h-full z-0"
-                     style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0) 100%)' }} 
-                   />
-                   
-                   <div 
+                <div className="absolute inset-x-0 top-[40vh] h-[45vh] flex justify-center z-30 pointer-events-none">
+                   <div
                       ref={scrollContainerRef}
-                      className="w-full max-w-5xl overflow-hidden text-center relative pointer-events-auto pt-12"
-                      style={{ 
-                        // Much softer mask allowing 4-5 lines of text to be visible
-                        maskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 70%)', 
-                        WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 70%)' 
+                      className="w-full max-w-5xl overflow-hidden text-center relative pointer-events-auto"
+                      style={{
+                        maskImage: 'linear-gradient(to bottom, black 0%, black 50%, transparent 85%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 50%, transparent 85%)'
                       }}
                    >
                      <p 
