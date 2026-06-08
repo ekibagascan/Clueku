@@ -29,6 +29,7 @@ const LiveSession: React.FC = () => {
   const [scrollSpeed, setScrollSpeed] = useState(1); // 0 to 5
   const [fontSize, setFontSize] = useState(typeof window !== 'undefined' && window.innerWidth < 768 ? 28 : 42);
   const [textPosition, setTextPosition] = useState(40); // vh from top
+  const [voiceScrollEnabled, setVoiceScrollEnabled] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -474,15 +475,19 @@ const LiveSession: React.FC = () => {
       return;
     }
     const checkAudioAndScroll = () => {
-      if (!inputAnalyser || !scrollContainerRef.current) return;
+      if (!scrollContainerRef.current) return;
+      if (!voiceScrollEnabled) {
+        scrollContainerRef.current.scrollTop += scrollSpeed;
+        return;
+      }
+      if (!inputAnalyser) return;
       const bufferLength = inputAnalyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
       inputAnalyser.getByteFrequencyData(dataArray);
       let sum = 0;
       for(let i = 0; i < bufferLength; i++) { sum += dataArray[i]; }
       const average = sum / bufferLength;
-      const speakingThreshold = 25; 
-      if (average > speakingThreshold) {
+      if (average > 25) {
         scrollContainerRef.current.scrollTop += scrollSpeed;
       }
     };
@@ -490,7 +495,7 @@ const LiveSession: React.FC = () => {
     return () => {
       if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
     };
-  }, [mode, connectionState, isRecording, isPaused, inputAnalyser, scrollSpeed]);
+  }, [mode, connectionState, isRecording, isPaused, inputAnalyser, scrollSpeed, voiceScrollEnabled]);
 
 
   useEffect(() => {
@@ -849,11 +854,16 @@ const LiveSession: React.FC = () => {
                      )}
                   </div>
 
-                  <p className="text-[10px] text-slate-400 font-mono">
-                    {isRecording && !isPaused 
-                      ? "Smart Scroll Active: Read aloud to scroll" 
-                      : "Press Record to start Smart Scroll"}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] text-slate-400 font-mono uppercase">Voice Scroll</span>
+                    <button
+                      onClick={() => setVoiceScrollEnabled(v => !v)}
+                      className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${voiceScrollEnabled ? 'bg-emerald-500' : 'bg-slate-600'}`}
+                    >
+                      <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-300 ${voiceScrollEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+                    </button>
+                    <span className="text-[10px] text-slate-400 font-mono">{voiceScrollEnabled ? 'ON' : 'OFF'}</span>
+                  </div>
                 </div>
               </>
             )}
