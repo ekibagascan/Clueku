@@ -10,7 +10,19 @@ const SCRIPT_MODEL_NAME = 'gemini-2.5-flash';
 const FRAME_RATE = 5; // FPS for video streaming
 const JPEG_QUALITY = 0.8;
 
+const useIsLandscape = () => {
+  const [isLandscape, setIsLandscape] = useState(() => window.innerWidth > window.innerHeight);
+  useEffect(() => {
+    const update = () => setIsLandscape(window.innerWidth > window.innerHeight);
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+    return () => { window.removeEventListener('resize', update); window.removeEventListener('orientationchange', update); };
+  }, []);
+  return isLandscape;
+};
+
 const LiveSession: React.FC = () => {
+  const isLandscape = useIsLandscape();
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
   const [mode, setMode] = useState<AppMode>(AppMode.CONVERSATION);
   const [error, setError] = useState<string | null>(null);
@@ -559,93 +571,93 @@ const LiveSession: React.FC = () => {
   }
 
   const renderStartScreen = () => (
-    <div className="flex flex-col items-center w-full max-w-5xl animate-fade-in px-4 pb-safe">
-      <h1 className="text-3xl md:text-6xl font-bold text-white mb-4 text-center leading-tight">
+    <div className={`flex flex-col items-center w-full max-w-5xl animate-fade-in px-4 pb-safe ${isLandscape ? 'overflow-y-auto max-h-screen py-2' : ''}`}>
+      <h1 className={`font-bold text-white text-center leading-tight ${isLandscape ? 'text-2xl mb-2' : 'text-3xl md:text-6xl mb-4'}`}>
         Choose Your Interface
       </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mt-6">
+      <div className={`grid gap-3 w-full ${isLandscape ? 'grid-cols-3 mt-2' : 'grid-cols-1 sm:grid-cols-3 mt-6'}`}>
         <button
           onClick={() => setMode(AppMode.CONVERSATION)}
-          className={`group relative p-4 sm:p-6 rounded-3xl border transition-all duration-300 text-left active:scale-95 hover:scale-[1.02] flex sm:flex-col items-center sm:items-start gap-4 ${mode === AppMode.CONVERSATION ? 'bg-blue-600/20 border-blue-500 ring-2 ring-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+          className={`group relative rounded-3xl border transition-all duration-300 text-left active:scale-95 hover:scale-[1.02] flex items-center gap-3 ${isLandscape ? 'p-3 flex-col justify-center' : 'p-4 sm:p-6 sm:flex-col sm:items-start'} ${mode === AppMode.CONVERSATION ? 'bg-blue-600/20 border-blue-500 ring-2 ring-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
         >
-          <div className="shrink-0 w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-            <User className="w-6 h-6 text-white" />
+          <div className={`shrink-0 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 ${isLandscape ? 'w-9 h-9' : 'w-12 h-12'}`}>
+            <User className={isLandscape ? 'w-5 h-5 text-white' : 'w-6 h-6 text-white'} />
           </div>
           <div>
-            <h3 className="text-base sm:text-xl font-bold sm:mb-2">Conversation</h3>
-            <p className="text-slate-400 text-sm hidden sm:block">Natural video chat with Gemini.</p>
+            <h3 className={`font-bold ${isLandscape ? 'text-sm text-center' : 'text-base sm:text-xl sm:mb-2'}`}>Conversation</h3>
+            {!isLandscape && <p className="text-slate-400 text-sm hidden sm:block">Natural video chat with Gemini.</p>}
           </div>
         </button>
 
         <button
           onClick={() => setMode(AppMode.COPILOT)}
-          className={`group relative p-4 sm:p-6 rounded-3xl border transition-all duration-300 text-left active:scale-95 hover:scale-[1.02] flex sm:flex-col items-center sm:items-start gap-4 ${mode === AppMode.COPILOT ? 'bg-purple-600/20 border-purple-500 ring-2 ring-purple-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+          className={`group relative rounded-3xl border transition-all duration-300 text-left active:scale-95 hover:scale-[1.02] flex items-center gap-3 ${isLandscape ? 'p-3 flex-col justify-center' : 'p-4 sm:p-6 sm:flex-col sm:items-start'} ${mode === AppMode.COPILOT ? 'bg-purple-600/20 border-purple-500 ring-2 ring-purple-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
         >
-          <div className="shrink-0 w-12 h-12 bg-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30">
-            <Briefcase className="w-6 h-6 text-white" />
+          <div className={`shrink-0 bg-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30 ${isLandscape ? 'w-9 h-9' : 'w-12 h-12'}`}>
+            <Briefcase className={isLandscape ? 'w-5 h-5 text-white' : 'w-6 h-6 text-white'} />
           </div>
           <div>
-            <h3 className="text-base sm:text-xl font-bold sm:mb-2">Interview Copilot</h3>
-            <p className="text-slate-400 text-sm hidden sm:block">Real-time interview assistance.</p>
+            <h3 className={`font-bold ${isLandscape ? 'text-sm text-center' : 'text-base sm:text-xl sm:mb-2'}`}>Interview Copilot</h3>
+            {!isLandscape && <p className="text-slate-400 text-sm hidden sm:block">Real-time interview assistance.</p>}
           </div>
-          <div className="absolute top-3 right-3 bg-purple-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Pro</div>
+          <div className="absolute top-2 right-2 bg-purple-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Pro</div>
         </button>
 
         <button
           onClick={() => setMode(AppMode.TELEPROMPTER)}
-          className={`group relative p-4 sm:p-6 rounded-3xl border transition-all duration-300 text-left active:scale-95 hover:scale-[1.02] flex sm:flex-col items-center sm:items-start gap-4 ${mode === AppMode.TELEPROMPTER ? 'bg-emerald-600/20 border-emerald-500 ring-2 ring-emerald-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+          className={`group relative rounded-3xl border transition-all duration-300 text-left active:scale-95 hover:scale-[1.02] flex items-center gap-3 ${isLandscape ? 'p-3 flex-col justify-center' : 'p-4 sm:p-6 sm:flex-col sm:items-start'} ${mode === AppMode.TELEPROMPTER ? 'bg-emerald-600/20 border-emerald-500 ring-2 ring-emerald-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
         >
-          <div className="shrink-0 w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
-            <ScrollText className="w-6 h-6 text-white" />
+          <div className={`shrink-0 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30 ${isLandscape ? 'w-9 h-9' : 'w-12 h-12'}`}>
+            <ScrollText className={isLandscape ? 'w-5 h-5 text-white' : 'w-6 h-6 text-white'} />
           </div>
           <div>
-            <h3 className="text-base sm:text-xl font-bold sm:mb-2">Teleprompter</h3>
-            <p className="text-slate-400 text-sm hidden sm:block">AI Scripting & Smart Scroll.</p>
+            <h3 className={`font-bold ${isLandscape ? 'text-sm text-center' : 'text-base sm:text-xl sm:mb-2'}`}>Teleprompter</h3>
+            {!isLandscape && <p className="text-slate-400 text-sm hidden sm:block">AI Scripting & Smart Scroll.</p>}
           </div>
         </button>
       </div>
 
       {mode === AppMode.TELEPROMPTER && (
-        <div className="w-full max-w-3xl mt-6 bg-slate-900/50 border border-emerald-500/30 rounded-2xl p-4 sm:p-6 animate-in slide-in-from-bottom-4">
-           <div className="flex flex-col gap-4">
-             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-               <Wand2 className="w-4 h-4 text-emerald-400" />
-               Generate Script with AI
-             </label>
-             <div className="flex flex-col sm:flex-row gap-2">
-               <input
-                 type="text"
-                 value={scriptTopic}
-                 onChange={(e) => setScriptTopic(e.target.value)}
-                 placeholder="e.g., Introduction video for a Senior React Developer role"
-                 className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-base"
-                 onKeyDown={(e) => e.key === 'Enter' && generateScript()}
+        <div className={`w-full max-w-3xl bg-slate-900/50 border border-emerald-500/30 rounded-2xl animate-in slide-in-from-bottom-4 ${isLandscape ? 'mt-2 p-3' : 'mt-6 p-4 sm:p-6'}`}>
+           <div className={`flex gap-3 ${isLandscape ? 'flex-row items-start' : 'flex-col'}`}>
+             <div className={`flex flex-col gap-2 ${isLandscape ? 'flex-1' : 'w-full'}`}>
+               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                 <Wand2 className="w-4 h-4 text-emerald-400" />
+                 Generate Script with AI
+               </label>
+               <div className="flex gap-2">
+                 <input
+                   type="text"
+                   value={scriptTopic}
+                   onChange={(e) => setScriptTopic(e.target.value)}
+                   placeholder="Topic..."
+                   className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm"
+                   onKeyDown={(e) => e.key === 'Enter' && generateScript()}
+                 />
+                 <button
+                   onClick={generateScript}
+                   disabled={isGeneratingScript || !scriptTopic}
+                   className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-4 py-2 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                 >
+                   {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin"/> : "Generate"}
+                 </button>
+               </div>
+               <textarea
+                 value={scriptText}
+                 onChange={(e) => setScriptText(e.target.value)}
+                 placeholder="Or paste your script here..."
+                 className={`w-full bg-slate-950 border border-slate-700 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-mono text-sm leading-relaxed ${isLandscape ? 'h-24' : 'h-36 sm:h-48'}`}
                />
-               <button
-                 onClick={generateScript}
-                 disabled={isGeneratingScript || !scriptTopic}
-                 className="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-6 py-3 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[48px]"
-               >
-                 {isGeneratingScript ? <Loader2 className="w-5 h-5 animate-spin"/> : "Generate"}
-               </button>
              </div>
-
-             <textarea
-               value={scriptText}
-               onChange={(e) => setScriptText(e.target.value)}
-               placeholder="Or paste your script here..."
-               className="w-full h-36 sm:h-48 bg-slate-950 border border-slate-700 rounded-xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-mono text-sm leading-relaxed"
-             />
-             
-             <div className="flex justify-end pt-2">
-                <button 
-                  onClick={startSession}
-                  disabled={!scriptText.trim()}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-                >
-                  <Video className="w-5 h-5" />
-                  Start Teleprompter
-                </button>
+             <div className={`flex ${isLandscape ? 'flex-col justify-end' : 'justify-end pt-2'}`}>
+               <button
+                 onClick={startSession}
+                 disabled={!scriptText.trim()}
+                 className="bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 text-sm whitespace-nowrap"
+               >
+                 <Video className="w-4 h-4" />
+                 Start
+               </button>
              </div>
            </div>
         </div>
@@ -771,98 +783,92 @@ const LiveSession: React.FC = () => {
                    </div>
                 </div>
 
-                <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 w-full max-w-lg flex flex-col items-center gap-3 z-50 px-4">
+                {/* Landscape: right-side panel | Portrait: bottom bar */}
+                <div className={`absolute z-50 flex gap-3 ${
+                  isLandscape
+                    ? 'right-3 top-1/2 -translate-y-1/2 flex-col items-center'
+                    : 'bottom-4 left-1/2 -translate-x-1/2 flex-col items-center w-full max-w-lg px-4'
+                }`}>
 
-                  <div className="flex flex-wrap items-center justify-center gap-4 bg-black/60 backdrop-blur-md px-4 sm:px-6 py-3 rounded-2xl border border-white/10 w-full">
-                       <div className="flex items-center gap-2">
-                         <span className="text-[10px] text-slate-400 font-mono uppercase">Speed</span>
-                         <input
-                           type="range" min="0.1" max="5" step="0.1"
-                           value={scrollSpeed}
-                           onChange={(e) => setScrollSpeed(parseFloat(e.target.value))}
-                           className="w-20 sm:w-24 accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
-                         />
-                       </div>
-                       <div className="w-px h-4 bg-white/20 hidden sm:block" />
-                       <div className="flex items-center gap-2">
-                         <span className="text-[10px] text-slate-400 font-mono uppercase">Size</span>
-                         <input
-                           type="range" min="12" max="72" step="2"
-                           value={fontSize}
-                           onChange={(e) => setFontSize(parseInt(e.target.value))}
-                           className="w-20 sm:w-24 accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
-                         />
-                       </div>
-                       <div className="w-px h-4 bg-white/20 hidden sm:block" />
-                       <div className="flex items-center gap-2">
-                         <span className="text-[10px] text-slate-400 font-mono uppercase">Height</span>
-                         <input
-                           type="range" min="5" max="75" step="5"
-                           value={textPosition}
-                           onChange={(e) => setTextPosition(parseInt(e.target.value))}
-                           className="w-20 sm:w-24 accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
-                         />
-                       </div>
+                  {/* Sliders */}
+                  <div className={`flex bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 ${
+                    isLandscape ? 'flex-col gap-3 px-3 py-4 items-start' : 'flex-wrap items-center justify-center gap-4 px-4 py-3 w-full'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 font-mono uppercase">Speed</span>
+                      <input
+                        type="range" min="0.1" max="5" step="0.1"
+                        value={scrollSpeed}
+                        onChange={(e) => setScrollSpeed(parseFloat(e.target.value))}
+                        className={`accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer ${isLandscape ? 'w-16' : 'w-20 sm:w-24'}`}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 font-mono uppercase">Size</span>
+                      <input
+                        type="range" min="12" max="72" step="2"
+                        value={fontSize}
+                        onChange={(e) => setFontSize(parseInt(e.target.value))}
+                        className={`accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer ${isLandscape ? 'w-16' : 'w-20 sm:w-24'}`}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 font-mono uppercase">Height</span>
+                      <input
+                        type="range" min="5" max="75" step="5"
+                        value={textPosition}
+                        onChange={(e) => setTextPosition(parseInt(e.target.value))}
+                        className={`accent-emerald-500 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer ${isLandscape ? 'w-16' : 'w-20 sm:w-24'}`}
+                      />
+                    </div>
+                    {/* Voice scroll toggle */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 font-mono uppercase">Voice</span>
+                      <button
+                        onClick={() => setVoiceScrollEnabled(v => !v)}
+                        className={`relative w-8 h-4 rounded-full transition-colors duration-300 ${voiceScrollEnabled ? 'bg-emerald-500' : 'bg-slate-600'}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform duration-300 ${voiceScrollEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-6">
+                  {/* Record controls */}
+                  <div className={`relative flex items-center ${isLandscape ? 'flex-col gap-3' : 'gap-6'}`}>
+                     {isRecording && (
+                        <div className={`bg-red-500/20 border border-red-500/50 text-red-200 px-2 py-1 rounded-full text-[10px] font-bold tracking-wider animate-pulse flex items-center gap-1.5 ${isLandscape ? '' : 'absolute -top-12'}`}>
+                           <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                           {isPaused ? "PAUSED" : "REC"}
+                        </div>
+                     )}
                      <button
-                       onClick={() => {
-                         if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
-                       }}
-                       className="p-4 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-90 text-white transition-all shadow-lg border border-white/10 group"
+                       onClick={() => { if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0; }}
+                       className="p-3 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-90 text-white transition-all shadow-lg border border-white/10 group"
                        title="Restart Script"
                      >
-                       <RefreshCw className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
+                       <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
                      </button>
-
                      <button
                        onClick={stopRecording}
-                       className="p-4 rounded-full bg-slate-800 hover:bg-slate-700 text-white transition-all shadow-lg border border-white/10 group"
+                       className="p-3 rounded-full bg-slate-800 hover:bg-slate-700 text-white transition-all shadow-lg border border-white/10 group"
                        title="Stop & Review"
                        disabled={!isRecording && recordedChunksRef.current.length === 0}
                      >
-                       <Square className="w-5 h-5 fill-current group-hover:scale-110 transition-transform" />
+                       <Square className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" />
                      </button>
-
-                     <button 
-                       onClick={() => {
-                         if (isRecording) {
-                           togglePauseRecording();
-                         } else {
-                           startRecording();
-                         }
-                       }}
-                       className={`w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-xl border-4 ${
-                         isRecording 
-                           ? (isPaused ? 'bg-amber-500 border-amber-600 scale-95' : 'bg-white border-slate-200') 
+                     <button
+                       onClick={() => { if (isRecording) { togglePauseRecording(); } else { startRecording(); } }}
+                       className={`rounded-full flex items-center justify-center transition-all shadow-xl border-4 ${isLandscape ? 'w-14 h-14' : 'w-20 h-20'} ${
+                         isRecording
+                           ? (isPaused ? 'bg-amber-500 border-amber-600 scale-95' : 'bg-white border-slate-200')
                            : 'bg-red-600 border-red-700 hover:scale-105'
                        }`}
                      >
-                        {isRecording ? (
-                          isPaused ? <Play className="w-8 h-8 text-white fill-current ml-1" /> : <Pause className="w-8 h-8 text-slate-900 fill-current" />
-                        ) : (
-                          <Circle className="w-8 h-8 text-white fill-current" />
-                        )}
+                       {isRecording
+                         ? (isPaused ? <Play className={`text-white fill-current ml-1 ${isLandscape ? 'w-5 h-5' : 'w-8 h-8'}`} /> : <Pause className={`text-slate-900 fill-current ${isLandscape ? 'w-5 h-5' : 'w-8 h-8'}`} />)
+                         : <Circle className={`text-white fill-current ${isLandscape ? 'w-5 h-5' : 'w-8 h-8'}`} />
+                       }
                      </button>
-
-                     {isRecording && (
-                        <div className="absolute -top-12 bg-red-500/20 border border-red-500/50 text-red-200 px-3 py-1 rounded-full text-xs font-bold tracking-wider animate-pulse flex items-center gap-2">
-                           <div className="w-2 h-2 bg-red-500 rounded-full" />
-                           {isPaused ? "PAUSED" : "RECORDING"}
-                        </div>
-                     )}
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-slate-400 font-mono uppercase">Voice Scroll</span>
-                    <button
-                      onClick={() => setVoiceScrollEnabled(v => !v)}
-                      className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${voiceScrollEnabled ? 'bg-emerald-500' : 'bg-slate-600'}`}
-                    >
-                      <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-300 ${voiceScrollEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
-                    </button>
-                    <span className="text-[10px] text-slate-400 font-mono">{voiceScrollEnabled ? 'ON' : 'OFF'}</span>
                   </div>
                 </div>
               </>
@@ -905,39 +911,43 @@ const LiveSession: React.FC = () => {
             )}
 
             {mode !== AppMode.TELEPROMPTER && (
-              <div className="w-full max-w-fit mx-auto bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-full px-4 sm:px-8 py-3 sm:py-4 shadow-2xl flex items-center gap-4 sm:gap-8 mb-6 sm:mb-8 z-50">
-                <button 
+              <div className={`bg-slate-900/80 backdrop-blur-2xl border border-white/10 shadow-2xl flex items-center z-50 ${
+                isLandscape
+                  ? 'absolute right-3 top-1/2 -translate-y-1/2 flex-col rounded-3xl px-3 py-4 gap-4'
+                  : 'w-full max-w-fit mx-auto rounded-full px-4 sm:px-8 py-3 sm:py-4 gap-4 sm:gap-8 mb-6 sm:mb-8'
+              }`}>
+                <button
                   onClick={toggleMic}
-                  className={`p-3 rounded-full transition-all ${isMicOn ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'}`}
+                  className={`p-3 rounded-full transition-all active:scale-90 ${isMicOn ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'}`}
                   title="Toggle Microphone"
                 >
-                  {isMicOn ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
+                  {isMicOn ? <Mic className={isLandscape ? 'w-5 h-5' : 'w-6 h-6'} /> : <MicOff className={isLandscape ? 'w-5 h-5' : 'w-6 h-6'} />}
                 </button>
 
-                <button 
+                <button
                   onClick={() => setIsAiMuted(!isAiMuted)}
-                  className={`p-3 rounded-full transition-all ${!isAiMuted ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'}`}
+                  className={`p-3 rounded-full transition-all active:scale-90 ${!isAiMuted ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'}`}
                 >
-                    <span className="font-bold text-xs">{isAiMuted ? "UNMUTE AI" : "MUTE AI"}</span>
+                  <span className="font-bold text-xs">{isAiMuted ? "UNMUTE\nAI" : "MUTE\nAI"}</span>
                 </button>
 
-                <div className="w-px h-10 bg-white/10" />
+                <div className={isLandscape ? 'w-8 h-px bg-white/10' : 'w-px h-10 bg-white/10'} />
 
-                <button 
+                <button
                   onClick={() => cleanup(false)}
-                  className="p-4 bg-red-600 hover:bg-red-500 rounded-full text-white shadow-lg shadow-red-900/40 hover:scale-105 transition-all"
+                  className="p-4 bg-red-600 hover:bg-red-500 active:scale-90 rounded-full text-white shadow-lg shadow-red-900/40 hover:scale-105 transition-all"
                 >
-                  <PhoneOff className="w-6 h-6" />
+                  <PhoneOff className={isLandscape ? 'w-5 h-5' : 'w-6 h-6'} />
                 </button>
-                
-                <div className="w-px h-10 bg-white/10" />
 
-                <button 
+                <div className={isLandscape ? 'w-8 h-px bg-white/10' : 'w-px h-10 bg-white/10'} />
+
+                <button
                   onClick={toggleCamera}
-                  className={`p-3 rounded-full transition-all ${isCameraOn ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'}`}
+                  className={`p-3 rounded-full transition-all active:scale-90 ${isCameraOn ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'}`}
                   title="Toggle Camera"
                 >
-                  {isCameraOn ? <Video className="w-6 h-6" /> : <VideoOff className="w-6 h-6" />}
+                  {isCameraOn ? <Video className={isLandscape ? 'w-5 h-5' : 'w-6 h-6'} /> : <VideoOff className={isLandscape ? 'w-5 h-5' : 'w-6 h-6'} />}
                 </button>
               </div>
             )}
